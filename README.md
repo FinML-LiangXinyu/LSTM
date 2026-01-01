@@ -2,7 +2,7 @@
 
 ## 一、 $LSTM$ 算法原理
 
-对于长度为 $T$ 的时间序列数据 $x=\left[x_1,x_2,\ldots,x_t,\ldots,x_T\right]$ ， $x_t$ 为时刻 $t$ 的输入向量。 $LSTM$ 算法的结构单元如下：
+对于长度为 $T$ 的时间序列数据 $x=\left[x_1,x_2,\ldots,x_t,\ldots,x_T\right]$ ， $x_t$ 为时刻 $t$ 的输入向量。$LSTM$ 算法的结构单元如下：
 
 $i_t=\sigma\left(z_{i_t}\right)=\sigma\left(U_ih_{t-1}+W_ix_t+b_i\right)$
 
@@ -74,35 +74,45 @@ $dL=tr\left(\left(\frac{\partial L}{\partial z_T}\right)^Tdz_T\right)=tr\left(\l
 
 $\frac{\partial L}{\partial h_T}=V^T\frac{\partial L}{\partial z_T}=V^T\left(\widehat{y_T}-y_T\right)$
 
-前一时刻的细胞状态 $c_{t-1}$ 通过影响前一时刻的隐状态 $h_{t-1}$ 和后一时刻的细胞状态 $c_t$ 进而分别影响前一时刻的损失 $L_{t-1}$ 和后一时刻的损失 $L_t$ ，最终影响总损失 $L$ ，对应的链式传播路径为：
+$t$时刻的细胞状态$c_t$通过影响$t$时刻的隐状态$h_t$和$t+1$时刻的隐状态$h_{t+1}$进而影响$t$时刻的损失$L_t$和$t+1$时刻的损失$L_{t+1}$，最终影响总损失$L$，对应的链式传播路径为：
 
-$c_{t-1}\rightarrow h_{t-1}\rightarrow z_{t-1}\rightarrow L_{t-1}\rightarrow L$
+$c_t\rightarrow h_t\rightarrow z_t\rightarrow L_t\rightarrow L$
 
-$c_{t-1}\rightarrow c_t\rightarrow h_t\rightarrow L_t\rightarrow L$
-
-可推：
-
-$dc_t=f_t\odot dc_{t-1}$
+$c_t\rightarrow c_{t+1}\rightarrow h_{t+1}\rightarrow z_{t+1}\rightarrow L_{t+1}\rightarrow L$
 
 $dL=tr\left(\left(\frac{\partial L}{\partial z_{t-1}}\right)^Tdz_{t-1}\right)=tr\left(\left(\frac{\partial L}{\partial z_{t-1}}\right)^TVdh_{t-1}\right)=tr\left(\left(\frac{\partial L}{\partial z_{t-1}}\right)^TVdh_{t-1}\right)=tr\left(\left(V^T\frac{\partial L}{\partial z_{t-1}}\right)^Tdh_{t-1}\right)$
 
-$\frac{\partial L}{\partial h_{t-1}}=\frac{\partial L}{\partial h_{t-1}}=V^T\frac{\partial L}{\partial z_{t-1}}=V^T\left(\widehat{y_{t-1}}-y_{t-1}\right)$
-
-$dh_t=o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot dc_t$
-
-$dL=tr\left(\left(\frac{\partial L}{\partial h_t}\right)^Tdh_t\right)=tr\left(\left(\frac{\partial L}{\partial h_t}\right)^To_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot d c_t\right)=tr\left(\left(\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\right)^Tdc_t\right)$
-
-$\frac{\partial L}{\partial c_t}=\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)$
-
-前一时刻的隐状态 $h_{t-1}$ 会影响时刻 $t$ 的输入门  $i_t$ 、遗忘门 $f_t$ 和 $\widetilde{c_t}$ ，进而影响时刻 $t$ 的细胞状态 $c_t$ ，对应的链式传播路径为：
-
-$h_{t-1}\rightarrow z_{t-1}\rightarrow L_{t-1}\rightarrow L$
-
-$h_{t-1}\rightarrow i_t,f_t,\widetilde{c_t}\rightarrow c_t\rightarrow L_t\rightarrow L$
+$\frac{\partial L}{\partial h_{t-1}}=V^T\frac{\partial L}{\partial z_{t-1}}=V^T\left(\widehat{y_{t-1}}-y_{t-1}\right)$
 
 可推：
 
-$dL=tr\left(\left(\frac{\partial L}{\partial z_{t-1}}\right)^Tdz_{t-1}\right)+tr\left(\left(\frac{\partial L}{\partial c_t}\right)^Tdc_t\right)=tr\left(\left(V^T\left(\widehat{y_{t-1}}-y_{t-1}\right)\right)^Tdh_{t-1}\right)+tr\left(\left(\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\right)^Tdc_t\right)$
+$dc_{t+1}=f_t\odot dc_t$
+
+$dh_t=o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot dc_t$
+
+$dL=tr\left(\left(\frac{\partial L}{\partial h_t}\right)^Tdh_t\right)+tr\left(\left(\frac{\partial L}{\partial h_{t+1}}\right)^Tdh_{t+1}\right)=tr\left(\left(\frac{\partial L_t}{\partial h_t}\right)^To_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot d c_t\right)+tr\left(\left(\frac{\partial L}{\partial h_{t+1}}\right)^To_{t+1}\odot\left(1-{tanh}^2\left(c_{t+1}\right)\right)\odot d c_{t+1}\right)=tr\left(\left(\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\right)^Tdc_t\right)+tr\left(\left(\frac{\partial L}{\partial h_{t+1}}\odot o_{t+1}\odot\left(1-{tanh}^2\left(c_{t+1}\right)\right)\odot f_t\right)^Tdc_t\right)$
+
+$\frac{\partial L}{\partial c_t}=\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)+\frac{\partial L}{\partial h_{t+1}}\odot o_{t+1}\odot\left(1-{tanh}^2\left(c_{t+1}\right)\right)\odot f_t$
+
+同理：
+
+$c_T\rightarrow h_T\rightarrow z_T\rightarrow L_T\rightarrow L$
+
+$\frac{\partial L}{\partial c_T}=\frac{\partial L}{\partial h_T}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)$
+
+前一时刻的隐状态 $h_{t-1}$ 会影响时刻 $t$ 的输入门  $i_t$ 、遗忘门 $f_t$ 和 $\widetilde{c_t}$ ，进而影响时刻 $t$ 的细胞状态 $c_t$ ，对应的链式传播路径为：
+
+$h_{t-1}\rightarrow i_t,f_t,\widetilde{c_t}\rightarrow c_t\rightarrow L_t\rightarrow L$
+
+此外，隐状态 $h_{t-1}$ 还有如下两条链式传播路径：
+
+$h_{t-1}\rightarrow z_{t-1}\rightarrow L_{t-1}\rightarrow L$
+
+$h_{t-1}\rightarrow o_t\rightarrow h_t\rightarrow z_t\rightarrow L_t\rightarrow L$
+
+可推：
+
+$dL=tr\left(\left(\frac{\partial L}{\partial z_{t-1}}\right)^Tdz_{t-1}\right)+tr\left(\left(\frac{\partial L}{\partial c_t}\right)^Tdc_t\right)+tr\left(\left(\frac{\partial L}{\partial h_t}\right)^Tdh_t\right)=tr\left(\left(V^T\left(\widehat{y_{t-1}}-y_{t-1}\right)\right)^Tdh_{t-1}\right)+tr\left(\left(\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\right)^Tdc_t\right)+tr\left(\left(\frac{\partial L}{\partial h_t}\right)^Tdo_t\odot t a n h\left(c_t\right)\right)=tr\left(\left(V^T\left(\widehat{y_{t-1}}-y_{t-1}\right)\right)^Tdh_{t-1}\right)+tr\left(\left(\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\right)^Tdc_t\right)+tr\left(\left(\frac{\partial L}{\partial h_t}\right)^T{\sigma_{o_t}}^\prime\odot U_odh_{t-1}\odot t a n h\left(c_t\right)\right)=tr\left(\left(V^T\left(\widehat{y_{t-1}}-y_{t-1}\right)\right)^Tdh_{t-1}\right)+tr\left(\left(\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\right)^Tdc_t\right)+tr\left(\left({U_o}^T\frac{\partial L}{\partial h_t}\odot t a n h\left(c_t\right)\odot{\sigma_{o_t}}^\prime\right)^Tdh_{t-1}\right)$
 
 $dc_t=di_t\odot\widetilde{c_t}+i_t\odot d\widetilde{c_t}+df_t\odot c_{t-1}={\sigma_{i_t}}^\prime\odot U_idh_{t-1}\odot\widetilde{c_t}+i_t\odot\left(1-\widetilde{c_t}\odot\widetilde{c_t}\right)\odot U_cdh_{t-1}+{\sigma_{f_t}}^\prime\odot U_fdh_{t-1}\odot c_{t-1}$
 
@@ -110,7 +120,7 @@ $tr\left(\left(\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\lef
 
 可得：
 
-$\frac{\partial L}{\partial h_{t-1}}=V^T\left(\widehat{y_{t-1}}-y_{t-1}\right)+{U_i}^T\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot\widetilde{c_t}\odot{\sigma_{i_t}}^\prime+{U_c}^T\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot i_t\odot\left(1-\widetilde{c_t}\odot\widetilde{c_t}\right)+{U_f}^T\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot c_{t-1}\odot{\sigma_{f_t}}^\prime$
+$\frac{\partial L}{\partial h_{t-1}}=V^T\left(\widehat{y_{t-1}}-y_{t-1}\right)+{U_i}^T\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot\widetilde{c_t}\odot{\sigma_{i_t}}^\prime+{U_c}^T\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot i_t\odot\left(1-\widetilde{c_t}\odot\widetilde{c_t}\right)+{U_f}^T\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot c_{t-1}\odot{\sigma_{f_t}}^\prime+{U_o}^T\frac{\partial L}{\partial h_t}\odot tanh\left(c_t\right)\odot{\sigma_{o_t}}^\prime$
 
 时刻 $t$ 的 $\widetilde{c_t}$ 的链式传播路径为：
 
@@ -118,17 +128,17 @@ $\widetilde{c_t}\rightarrow c_t\rightarrow h_t\rightarrow z_t\rightarrow L_t\rig
 
 可推：
 
-$dL=tr\left(\sum_{t=1}^{T}{\left(\frac{\partial L}{\partial h_t}\right)^Tdh_t}\right)=tr\left(\sum_{t=1}^{T}{\left(\frac{\partial L}{\partial h_t}\right)^To_t\odot\left(1-{tanh}^2\left(c_t\right)\right)dc_t}\right)=tr\left(\sum_{t=1}^{T}{\left(\frac{\partial L}{\partial h_t}\right)^To_t\odot\left(1-{tanh}^2\left(c_t\right)\right)i_t\odot d\widetilde{c_t}}\right)=tr\left(\sum_{t=1}^{T}{\left(\frac{\partial L}{\partial h_t}\right)^To_t\odot\left(1-{tanh}^2\left(c_t\right)\right)i_t\odot\left(1-{\widetilde{c_t}}^2\right)\odot d U_ch_{t-1}}\right)=tr\left(\sum_{t=1}^{T}{\left(\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)i_t\odot\left(1-{\widetilde{c_t}}^2\right)\right)^TdU_ch_{t-1}}\right)=tr\left(\sum_{t=1}^{T}{\left(\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)i_t\odot\left(1-{\widetilde{c_t}}^2\right){h_{t-1}}^T\right)^TdU_c}\right)$
+$dL=tr\left(\sum_{t=1}^{T}{\left(\frac{\partial L}{\partial c_t}\right)^Tdc_t}\right)=tr\left(\sum_{t=1}^{T}{\left(\frac{\partial L}{\partial c_t}\right)^Ti_t\odot d\widetilde{c_t}}\right)=tr\left(\sum_{t=1}^{T}{\left(\frac{\partial L}{\partial c_t}\right)^Ti_t\odot\left(1-{\widetilde{c_t}}^2\right)\odot d U_ch_{t-1}}\right)=tr\left(\sum_{t=1}^{T}{\left(\frac{\partial L}{\partial c_t}\odot i_t\odot\left(1-{\widetilde{c_t}}^2\right)\right)^TdU_ch_{t-1}}\right)=tr\left(\sum_{t=1}^{T}{\left(\frac{\partial L}{\partial c_t}\odot i_t\odot\left(1-{\widetilde{c_t}}^2\right){h_{t-1}}^T\right)^TdU_c}\right)$
 
 可得:
 
-$\frac{\partial L}{\partial U_c}=\sum_{t=1}^{T}{\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)i_t\odot\left(1-{\widetilde{c_t}}^2\right){h_{t-1}}^T}$
+$\frac{\partial L}{\partial U_c}=\sum_{t=1}^{T}{\frac{\partial L}{\partial c_t}\odot i_t\odot\left(1-{\widetilde{c_t}}^2\right){h_{t-1}}^T}$
 
 同理可得：
 
-$\frac{\partial L}{\partial W_c}=\sum_{t=1}^{T}{\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)i_t\odot\left(1-{\widetilde{c_t}}^2\right){x_t}^T}$
+$\frac{\partial L}{\partial W_c}=\sum_{t=1}^{T}{\frac{\partial L}{\partial c_t}\odot i_t\odot\left(1-{\widetilde{c_t}}^2\right){x_t}^T}$
 
-$\frac{\partial L}{\partial b_c}=\sum_{t=1}^{T}{\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)i_t\odot\left(1-{\widetilde{c_t}}^2\right)}$
+$\frac{\partial L}{\partial b_c}=\sum_{t=1}^{T}{\frac{\partial L}{\partial c_t}\odot i_t\odot\left(1-{\widetilde{c_t}}^2\right)}$
 
 同理可得：
 
@@ -148,9 +158,11 @@ $\frac{\partial L}{\partial b_z}=\sum_{t=1}^{T}\frac{\partial L}{\partial b_z}=\
 
 记 $\delta_h^t=\frac{\partial L}{\partial h_t}$ , $\delta_c^t=\frac{\partial L}{\partial c_t}$，则有：
 
-$\delta_c^t=\delta_h^t\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)$
+$\delta_c^t=\delta_h^t\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)+\delta_h^{t+1}\odot o_{t+1}\odot\left(1-{tanh}^2\left(c_{t+1}\right)\right)\odot f_t$
 
-$\delta_h^{t-1}=V^T\left(\widehat{y_{t-1}}-y_{t-1}\right)+{U_i}^T\delta_h^t\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot\widetilde{c_t}\odot{\sigma_{i_t}}^\prime+{U_c}^T\delta_h^t\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot i_t\odot\left(1-\widetilde{c_t}\odot\widetilde{c_t}\right)+{U_f}^T\delta_h^t\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot c_{t-1}\odot{\sigma_{f_t}}^\prime$
+$\delta_c^T=\delta_h^T\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)$
+
+$\delta_h^{t-1}=V^T\left(\widehat{y_{t-1}}-y_{t-1}\right)+{U_i}^T\delta_h^t\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot\widetilde{c_t}\odot{\sigma_{i_t}}^\prime+{U_c}^T\delta_h^t\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot i_t\odot\left(1-\widetilde{c_t}\odot\widetilde{c_t}\right)+{U_f}^T\delta_h^t\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot c_{t-1}\odot{\sigma_{f_t}}^\prime+{U_o}^T\delta_h^t\odot tanh\left(c_t\right)\odot{\sigma_{o_t}}^\prime$
 
 反向传播公式汇总如下：
 
@@ -166,11 +178,11 @@ $\frac{\partial L}{\partial W_f}=\sum_{t=1}^{T}{\delta_c^t\odot c_{t-1}\odot{\si
 
 $\frac{\partial L}{\partial b_f}=\sum_{t=1}^{T}{\delta_c^t\odot c_{t-1}\odot{\sigma_{f_t}}^\prime}$
 
-$\frac{\partial L}{\partial U_c}=\sum_{t=1}^{T}{\delta_h^t\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)i_t\odot\left(1-{\widetilde{c_t}}^2\right){h_{t-1}}^T}$
+$\frac{\partial L}{\partial U_c}=\sum_{t=1}^{T}{\delta_c^t\odot i_t\odot\left(1-{\widetilde{c_t}}^2\right){h_{t-1}}^T}$
 
-$\frac{\partial L}{\partial W_c}=\sum_{t=1}^{T}{\delta_h^t\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)i_t\odot\left(1-{\widetilde{c_t}}^2\right){x_t}^T}$
+$\frac{\partial L}{\partial W_c}=\sum_{t=1}^{T}{\delta_c^t\odot i_t\odot\left(1-{\widetilde{c_t}}^2\right){x_t}^T}$
 
-$\frac{\partial L}{\partial b_c}=\sum_{t=1}^{T}{\delta_h^t\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)i_t\odot\left(1-{\widetilde{c_t}}^2\right)}$
+$\frac{\partial L}{\partial b_c}=\sum_{t=1}^{T}{\delta_c^t\odot i_t\odot\left(1-{\widetilde{c_t}}^2\right)}$
 
 $\frac{\partial L}{\partial U_o}=\sum_{t=1}^{T}{\delta_h^t\odot t a n h\left(c_t\right)\odot{\sigma_{o_t}}^\prime{h_{t-1}}^T}$
 
@@ -179,3 +191,7 @@ $\frac{\partial L}{\partial W_o}=\sum_{t=1}^{T}{\delta_h^t\odot t a n h\left(c_t
 $\frac{\partial L}{\partial b_o}=\sum_{t=1}^{T}{\delta_h^t\odot t a n h\left(c_t\right)\odot{\sigma_{o_t}}^\prime}$
 
 $\frac{\partial L}{\partial b_z}=\sum_{t=1}^{T}\left(\widehat{y_t}-y_t\right)$
+
+$\frac{\partial L}{\partial V}=\sum_{t=1}^{T}{\frac{\partial L}{\partial z_t}{h_t}^T}=\sum_{t=1}^{T}{\left(\widehat{y_t}-y_t\right){h_t}^T}$
+
+$\frac{\partial L}{\partial b_z}=\sum_{t=1}^{T}\frac{\partial L}{\partial b_z}=\sum_{t=1}^{T}\left(\widehat{y_t}-y_t\right)$
