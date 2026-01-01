@@ -2,7 +2,7 @@
 
 ## 一、 $LSTM$ 算法原理
 
-对于长度为 $T$ 的时间序列数据 $x=\left[x_1,x_2,\ldots,x_t,\ldots,x_T\right]$ ， $x_t$ 为时刻 $t$ 的输入向量。$LSTM$ 算法的结构单元如下：
+对于长度为 $T$ 的时间序列数据 $x=\left[x_1,x_2,\ldots,x_t,\ldots,x_T\right]$ ， $x_t$ 为时刻 $t$ 的输入向量。 $LSTM$ 算法的结构单元如下：
 
 $i_t=\sigma\left(z_{i_t}\right)=\sigma\left(U_ih_{t-1}+W_ix_t+b_i\right)$
 
