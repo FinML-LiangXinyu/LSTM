@@ -80,7 +80,7 @@ $dL=tr\left(\left(\frac{\partial L}{\partial z_{t-1}}\right)^Tdz_{t-1}\right)=tr
 
 $\frac{\partial L}{\partial h_{t-1}}=V^T\frac{\partial L}{\partial z_{t-1}}=V^T\left(\widehat{y_{t-1}}-y_{t-1}\right)$
 
-$t$时刻的细胞状态$c_t$通过影响$t$时刻的隐状态$h_t$和$t+1$时刻的隐状态$h_{t+1}$进而影响$t$时刻的损失$L_t$和$t+1$时刻的损失$L_{t+1}$，最终影响总损失$L$，对应的链式传播路径为：
+$t$ 时刻的细胞状态 $c_t$ 通过影响 $t$ 时刻的隐状态 $h_t$ 和 $t+1$ 时刻的隐状态 $h_{t+1}$ 进而影响 $t$ 时刻的损失 $L_t$ 和 $t+1$ 时刻的损失 $L_{t+1}$ ，最终影响总损失 $L$ ，对应的链式传播路径为：
 
 $c_t\rightarrow h_t\rightarrow z_t\rightarrow L_t\rightarrow L$
 
