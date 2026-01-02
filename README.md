@@ -74,15 +74,17 @@ $dL=tr\left(\left(\frac{\partial L}{\partial z_T}\right)^Tdz_T\right)=tr\left(\l
 
 $\frac{\partial L}{\partial h_T}=V^T\frac{\partial L}{\partial z_T}=V^T\left(\widehat{y_T}-y_T\right)$
 
+同理可得：
+
+$dL=tr\left(\left(\frac{\partial L}{\partial z_{t-1}}\right)^Tdz_{t-1}\right)=tr\left(\left(\frac{\partial L}{\partial z_{t-1}}\right)^TVdh_{t-1}\right)=tr\left(\left(\frac{\partial L}{\partial z_{t-1}}\right)^TVdh_{t-1}\right)=tr\left(\left(V^T\frac{\partial L}{\partial z_{t-1}}\right)^Tdh_{t-1}\right)$
+
+$\frac{\partial L}{\partial h_{t-1}}=V^T\frac{\partial L}{\partial z_{t-1}}=V^T\left(\widehat{y_{t-1}}-y_{t-1}\right)$
+
 $t$时刻的细胞状态$c_t$通过影响$t$时刻的隐状态$h_t$和$t+1$时刻的隐状态$h_{t+1}$进而影响$t$时刻的损失$L_t$和$t+1$时刻的损失$L_{t+1}$，最终影响总损失$L$，对应的链式传播路径为：
 
 $c_t\rightarrow h_t\rightarrow z_t\rightarrow L_t\rightarrow L$
 
 $c_t\rightarrow c_{t+1}\rightarrow h_{t+1}\rightarrow z_{t+1}\rightarrow L_{t+1}\rightarrow L$
-
-$dL=tr\left(\left(\frac{\partial L}{\partial z_{t-1}}\right)^Tdz_{t-1}\right)=tr\left(\left(\frac{\partial L}{\partial z_{t-1}}\right)^TVdh_{t-1}\right)=tr\left(\left(\frac{\partial L}{\partial z_{t-1}}\right)^TVdh_{t-1}\right)=tr\left(\left(V^T\frac{\partial L}{\partial z_{t-1}}\right)^Tdh_{t-1}\right)$
-
-$\frac{\partial L}{\partial h_{t-1}}=V^T\frac{\partial L}{\partial z_{t-1}}=V^T\left(\widehat{y_{t-1}}-y_{t-1}\right)$
 
 可推：
 
@@ -90,9 +92,9 @@ $dc_{t+1}=f_t\odot dc_t$
 
 $dh_t=o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot dc_t$
 
-$dL=tr\left(\left(\frac{\partial L}{\partial h_t}\right)^Tdh_t\right)+tr\left(\left(\frac{\partial L}{\partial h_{t+1}}\right)^Tdh_{t+1}\right)=tr\left(\left(\frac{\partial L_t}{\partial h_t}\right)^To_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot d c_t\right)+tr\left(\left(\frac{\partial L}{\partial h_{t+1}}\right)^To_{t+1}\odot\left(1-{tanh}^2\left(c_{t+1}\right)\right)\odot d c_{t+1}\right)=tr\left(\left(\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\right)^Tdc_t\right)+tr\left(\left(\frac{\partial L}{\partial h_{t+1}}\odot o_{t+1}\odot\left(1-{tanh}^2\left(c_{t+1}\right)\right)\odot f_t\right)^Tdc_t\right)$
+$dL=tr\left(\left(\frac{\partial L}{\partial h_t}\right)^Tdh_t\right)+tr\left(\left(\frac{\partial L}{\partial c_{t+1}}\right)^Tdc_{t+1}\right)=tr\left(\left(\frac{\partial L_t}{\partial h_t}\right)^To_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot d c_t\right)+tr\left(\left(\frac{\partial L}{\partial c_{t+1}}\right)^Tf_t\odot d c_t\right)=tr\left(\left(\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\right)^Tdc_t\right)+tr\left(\left(\frac{\partial L}{\partial c_{t+1}}\odot f_t\right)^Tdc_t\right)$
 
-$\frac{\partial L}{\partial c_t}=\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)+\frac{\partial L}{\partial h_{t+1}}\odot o_{t+1}\odot\left(1-{tanh}^2\left(c_{t+1}\right)\right)\odot f_t$
+$\frac{\partial L}{\partial c_t}=\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)+\frac{\partial L}{\partial c_{t+1}}\odot f_t$
 
 同理：
 
@@ -158,9 +160,9 @@ $\frac{\partial L}{\partial b_z}=\sum_{t=1}^{T}\frac{\partial L}{\partial b_z}=\
 
 记 $\delta_h^t=\frac{\partial L}{\partial h_t}$ , $\delta_c^t=\frac{\partial L}{\partial c_t}$，则有：
 
-$\delta_c^t=\delta_h^t\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)+\delta_h^{t+1}\odot o_{t+1}\odot\left(1-{tanh}^2\left(c_{t+1}\right)\right)\odot f_t$
+$\delta_c^t=\delta_h^t\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)+\delta_c^{t+1}\odot f_t$
 
-$\delta_c^T=\delta_h^T\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)$
+$\delta_c^T=\delta_h^T\odot o_T\odot\left(1-{tanh}^2\left(c_T\right)\right)$
 
 $\delta_h^{t-1}=V^T\left(\widehat{y_{t-1}}-y_{t-1}\right)+{U_i}^T\delta_h^t\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot\widetilde{c_t}\odot{\sigma_{i_t}}^\prime+{U_c}^T\delta_h^t\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot i_t\odot\left(1-\widetilde{c_t}\odot\widetilde{c_t}\right)+{U_f}^T\delta_h^t\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot c_{t-1}\odot{\sigma_{f_t}}^\prime+{U_o}^T\delta_h^t\odot tanh\left(c_t\right)\odot{\sigma_{o_t}}^\prime$
 
