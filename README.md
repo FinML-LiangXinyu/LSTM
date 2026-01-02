@@ -74,17 +74,11 @@ $dL=tr\left(\left(\frac{\partial L}{\partial z_T}\right)^Tdz_T\right)=tr\left(\l
 
 $\frac{\partial L}{\partial h_T}=V^T\frac{\partial L}{\partial z_T}=V^T\left(\widehat{y_T}-y_T\right)$
 
-同理可得：
-
-$dL=tr\left(\left(\frac{\partial L}{\partial z_{t-1}}\right)^Tdz_{t-1}\right)=tr\left(\left(\frac{\partial L}{\partial z_{t-1}}\right)^TVdh_{t-1}\right)=tr\left(\left(\frac{\partial L}{\partial z_{t-1}}\right)^TVdh_{t-1}\right)=tr\left(\left(V^T\frac{\partial L}{\partial z_{t-1}}\right)^Tdh_{t-1}\right)$
-
-$\frac{\partial L}{\partial h_{t-1}}=V^T\frac{\partial L}{\partial z_{t-1}}=V^T\left(\widehat{y_{t-1}}-y_{t-1}\right)$
-
-$t$ 时刻的细胞状态 $c_t$ 通过影响 $t$ 时刻的隐状态 $h_t$ 和 $t+1$ 时刻的隐状态 $h_{t+1}$ 进而影响 $t$ 时刻的损失 $L_t$ 和 $t+1$ 时刻的损失 $L_{t+1}$ ，最终影响总损失 $L$ ，对应的链式传播路径为：
+$t$ 时刻的细胞状态 $c_t$ 通过影响 $t$ 时刻的隐状态 $h_t$ 和 $t+1$ 时刻的隐状态 $h_{t+1}$ 进而影响 $t$ 时刻的损失 $L_t$ 和 $>t$ 时刻的损失 $L_{>t}$ ，最终影响总损失 $L$ ，对应的链式传播路径为：
 
 $c_t\rightarrow h_t\rightarrow z_t\rightarrow L_t\rightarrow L$
 
-$c_t\rightarrow c_{t+1}\rightarrow h_{t+1}\rightarrow z_{t+1}\rightarrow L_{t+1}\rightarrow L$
+$c_t\rightarrow c_{t+1}\rightarrow h_{t+1}\rightarrow L$
 
 可推：
 
@@ -92,7 +86,7 @@ $dc_{t+1}=f_t\odot dc_t$
 
 $dh_t=o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot dc_t$
 
-$dL=tr\left(\left(\frac{\partial L}{\partial h_t}\right)^Tdh_t\right)+tr\left(\left(\frac{\partial L}{\partial c_{t+1}}\right)^Tdc_{t+1}\right)=tr\left(\left(\frac{\partial L_t}{\partial h_t}\right)^To_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot d c_t\right)+tr\left(\left(\frac{\partial L}{\partial c_{t+1}}\right)^Tf_t\odot d c_t\right)=tr\left(\left(\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\right)^Tdc_t\right)+tr\left(\left(\frac{\partial L}{\partial c_{t+1}}\odot f_t\right)^Tdc_t\right)$
+$dL=tr\left(\left(\frac{\partial L}{\partial h_t}\right)^Tdh_t\right)+tr\left(\left(\frac{\partial L}{\partial c_{t+1}}\right)^Tdc_{t+1}\right)=tr\left(\left(\frac{\partial L}{\partial h_t}\right)^To_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\odot d c_t\right)+tr\left(\left(\frac{\partial L}{\partial c_{t+1}}\right)^Tf_t\odot d c_t\right)=tr\left(\left(\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)\right)^Tdc_t\right)+tr\left(\left(\frac{\partial L}{\partial c_{t+1}}\odot f_t\right)^Tdc_t\right)$
 
 $\frac{\partial L}{\partial c_t}=\frac{\partial L}{\partial h_t}\odot o_t\odot\left(1-{tanh}^2\left(c_t\right)\right)+\frac{\partial L}{\partial c_{t+1}}\odot f_t$
 
@@ -104,13 +98,13 @@ $\frac{\partial L}{\partial c_T}=\frac{\partial L}{\partial h_T}\odot o_t\odot\l
 
 前一时刻的隐状态 $h_{t-1}$ 会影响时刻 $t$ 的输入门  $i_t$ 、遗忘门 $f_t$ 和 $\widetilde{c_t}$ ，进而影响时刻 $t$ 的细胞状态 $c_t$ ，对应的链式传播路径为：
 
-$h_{t-1}\rightarrow i_t,f_t,\widetilde{c_t}\rightarrow c_t\rightarrow L_t\rightarrow L$
+$h_{t-1}\rightarrow i_t,f_t,\widetilde{c_t}\rightarrow c_t\rightarrow L$
 
 此外，隐状态 $h_{t-1}$ 还有如下两条链式传播路径：
 
 $h_{t-1}\rightarrow z_{t-1}\rightarrow L_{t-1}\rightarrow L$
 
-$h_{t-1}\rightarrow o_t\rightarrow h_t\rightarrow z_t\rightarrow L_t\rightarrow L$
+$h_{t-1}\rightarrow o_t\rightarrow h_t\rightarrow L$
 
 可推：
 
@@ -126,7 +120,7 @@ $\frac{\partial L}{\partial h_{t-1}}=V^T\left(\widehat{y_{t-1}}-y_{t-1}\right)+{
 
 时刻 $t$ 的 $\widetilde{c_t}$ 的链式传播路径为：
 
-$\widetilde{c_t}\rightarrow c_t\rightarrow h_t\rightarrow z_t\rightarrow L_t\rightarrow L$
+$\widetilde{c_t}\rightarrow c_t\rightarrow h_t\rightarrow L$
 
 可推：
 
