@@ -156,7 +156,7 @@ $\frac{\partial L}{\partial b_o}=\sum_{t=1}^{T}{\frac{\partial L}{\partial h_t}\
 
 $\frac{\partial L}{\partial V}=\sum_{t=1}^{T}{\frac{\partial L}{\partial z_t}{h_t}^T}=\sum_{t=1}^{T}{\left(\widehat{y_t}-y_t\right){h_t}^T}$
 
-$\frac{\partial L}{\partial b_z}=\sum_{t=1}^{T}\frac{\partial L}{\partial b_z}=\sum_{t=1}^{T}\left(\widehat{y_t}-y_t\right)$
+$\frac{\partial L}{\partial b_z}=\sum_{t=1}^{T}\frac{\partial L}{\partial z_t}=\sum_{t=1}^{T}\left(\widehat{y_t}-y_t\right)$
 
 记 $\delta_h^t=\frac{\partial L}{\partial h_t}$ , $\delta_c^t=\frac{\partial L}{\partial c_t}$，则有：
 
@@ -196,4 +196,4 @@ $\frac{\partial L}{\partial b_z}=\sum_{t=1}^{T}\left(\widehat{y_t}-y_t\right)$
 
 $\frac{\partial L}{\partial V}=\sum_{t=1}^{T}{\frac{\partial L}{\partial z_t}{h_t}^T}=\sum_{t=1}^{T}{\left(\widehat{y_t}-y_t\right){h_t}^T}$
 
-$\frac{\partial L}{\partial b_z}=\sum_{t=1}^{T}\frac{\partial L}{\partial b_z}=\sum_{t=1}^{T}\left(\widehat{y_t}-y_t\right)$
+$\frac{\partial L}{\partial b_z}=\sum_{t=1}^{T}\frac{\partial L}{\partial z_t}=\sum_{t=1}^{T}\left(\widehat{y_t}-y_t\right)$
