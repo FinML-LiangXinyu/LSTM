@@ -1,4 +1,4 @@
-#  $LSTM$ 算法原理
+# $LSTM$ 算法原理
 
 对于长度为 $T$ 的时间序列数据 $x=\left[x_1,x_2,\ldots,x_t,\ldots,x_T\right]$ ， $x_t$ 为时刻 $t$ 的输入向量。 $LSTM$ 算法的结构单元如下：
 
@@ -20,9 +20,9 @@ $\widehat{y_t}=softmax\left(z_t\right)$
 
 其中， $h_{t-1}$ 代表 $t-1$ 时刻的隐状态， $x_t$ 为时刻 $t$ 的输入， $i_t$ 为时刻 $t$ 的输入门， $f_t$ 为时刻 $t$ 的遗忘门， $o_t$ 为时刻 $t$ 的输出门， $c_t$ 为时刻 $t$ 的细胞状态，它由经过输入门 $i_t$ 控制的 $\widetilde{c_t}$ 和遗忘门 $f_t$ 控制的 $c_{t-1}$ 相加得到。时刻 $t$ 的细胞状态 $c_t$ 经过 $tanh(·)$ 激活后，在输出门 $o_t$ 的控制下转换为 $t$ 时刻的隐状态 $h_t$ ，时刻 $t$ 的净输入 $z_t$ 经过 $softmax(·)$ 转换为时刻 $t$ 的最终输出 $\widehat{y_t}$ 。 $U_i$ 、$U_f$ 、 $U_o$ 、 $U_c$ 、 $W_i$ 、 $W_f$ 、 $W_o$ 、 $W_c$ 、 $V$ 为神经网络的权重矩阵， $b_i$ 、 $b_f$ 、 $b_o$ 、 $b_c$ 、 $b_z$ 为神经网络的偏置向量。
 
-矩阵 $U_i$ 在每个时刻 $t$ 都会影响该时刻的损失 $L_t$ 进而影响总损失 $L$ ，对应前向链式传播路径：
+矩阵 $U_i$ 在每个时刻 $t$ 都会影响该时刻的细胞状态 $c_t$ 进而影响总损失 $L$ ，对应前向链式传播路径：
 
-$U_i\rightarrow i_1,i_2,\ldots,i_t,\ldots,i_T\rightarrow c_1,c_2,\ldots,c_t,\ldots,c_T\rightarrow h_1,h_2,\ldots,h_t,\ldots,h_T\rightarrow z_1,z_2,\ldots,z_t,\ldots,z_T\rightarrow L_1,L_2,\ldots,L_t,\ldots,L_T\rightarrow L$
+$U_i\rightarrow i_1,i_2,\ldots,i_t,\ldots,i_T\rightarrow c_1,c_2,\ldots,c_t,\ldots,c_T\rightarrow L$
 
 可推：
 
@@ -44,9 +44,9 @@ $dL=tr\left(\sum_{t=1}^{T}{\left(\frac{\partial L}{\partial c_t}\right)^Tdc_t}\r
 
 $\frac{\partial L}{\partial b_i}=\sum_{t=1}^{T}{\frac{\partial L}{\partial c_t}\odot\widetilde{c_t}\odot{\sigma_{i_t}}^\prime}$
 
-矩阵 $U_f$ 在每个时刻 $t$ 都会影响该时刻的损失 $L_t$ 进而影响总损失 $L$ ，对应前向链式传播路径：
+矩阵 $U_f$ 在每个时刻 $t$ 都会影响该时刻的细胞状态 $c_t$ 进而影响总损失 $L$ ，对应前向链式传播路径：
 
-$U_f\rightarrow f_1,f_2,\ldots,f_t,\ldots,f_T\rightarrow c_1,c_2,\ldots,c_t,\ldots,c_T\rightarrow h_1,h_2,\ldots,h_t,\ldots,h_T\rightarrow z_1,z_2,\ldots,z_t,\ldots,z_T\rightarrow L_1,L_2,\ldots,L_t,\ldots,L_T\rightarrow L$
+$U_f\rightarrow f_1,f_2,\ldots,f_t,\ldots,f_T\rightarrow c_1,c_2,\ldots,c_t,\ldots,c_T\rightarrow L$
 
 可推：
 
@@ -72,11 +72,11 @@ $dL=tr\left(\left(\frac{\partial L}{\partial z_T}\right)^Tdz_T\right)=tr\left(\l
 
 $\frac{\partial L}{\partial h_T}=V^T\frac{\partial L}{\partial z_T}=V^T\left(\widehat{y_T}-y_T\right)$
 
-$t$ 时刻的细胞状态 $c_t$ 通过影响 $t$ 时刻的隐状态 $h_t$ 和 $t+1$ 时刻的隐状态 $h_{t+1}$ 进而影响 $t$ 时刻的损失 $L_t$ 和以后时刻的损失 $L_{>t}$ ，最终影响总损失 $L$ ，对应的链式传播路径为：
+$t$ 时刻的细胞状态 $c_t$ 通过影响 $t$ 时刻的隐状态 $h_t$ 和 $t+1$ 时刻的细胞状态 $c_{t+1}$ 进而影响总损失 $L$ ，对应的链式传播路径为：
 
-$c_t\rightarrow h_t\rightarrow z_t\rightarrow L_t\rightarrow L$
+$c_t\rightarrow h_t\rightarrow L$
 
-$c_t\rightarrow c_{t+1}\rightarrow h_{t+1}\rightarrow L$
+$c_t\rightarrow c_{t+1}\rightarrow L$
 
 可推：
 
